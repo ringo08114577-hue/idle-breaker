@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDLE BREAKER — 絶望からの大逆転</title>
+<style>
+:root{--bg:#050a19;--panel:#091831;--line:#28518a;--blue:#168dff;--cyan:#55e6ff;--gold:#ffd16a;--text:#edf6ff;--muted:#9ab9e6;--green:#53edb6;--pink:#ff7bc4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#1a2e64 0,#080f25 50%,#030612 100%);color:var(--text);font-family:Consolas,"Courier New",monospace}
+button{font:inherit;color:inherit;cursor:pointer;border:2px solid #3477b9;background:linear-gradient(#174a83,#0a2850);padding:9px 11px;box-shadow:inset 0 0 0 2px #071329}button:hover{filter:brightness(1.2)}button:active{transform:translateY(2px)}button:disabled{opacity:.38;cursor:not-allowed}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:#030918;border-bottom:3px solid #1b3971}.logo{font-size:clamp(20px,3vw,31px);font-weight:900;letter-spacing:2px;color:#e0f5ff;text-shadow:3px 3px #1762a5}.logo small{display:block;text-align:center;font-size:11px;color:var(--pink);letter-spacing:3px;text-shadow:none}.stat{flex:1;min-width:105px;padding:7px 10px;border:2px solid #204579;background:#08152e}.stat span{display:block;font-size:10px;color:var(--muted)}.stat b{display:block;font-size:17px;color:var(--gold);margin-top:3px}
+.layout{display:grid;grid-template-columns:164px minmax(0,1fr) 280px;gap:11px;padding:11px;max-width:1600px;margin:auto}.nav,.panel{background:linear-gradient(135deg,#0a1a37,#061127);border:2px solid var(--line);box-shadow:0 0 0 2px #020817,inset 0 0 0 2px #0c2244}.nav{height:max-content;padding:8px}.nav button{display:block;width:100%;text-align:left;margin-bottom:6px}.nav button.active{background:linear-gradient(#0878d6,#074184);border-color:var(--cyan)}.center{min-width:0}.scene{height:300px;position:relative;overflow:hidden;border:3px solid #244a83;background:#171d4a}.scene canvas{width:100%;height:100%;display:block;image-rendering:pixelated}.sceneText{position:absolute;top:9px;left:10px;right:10px;background:#07132cdd;border:1px solid #4166a3;padding:8px 10px;font-size:12px}.speech{position:absolute;left:23%;bottom:14%;max-width:240px;background:#09152eef;border:2px solid #b46ecb;padding:8px 10px;font-size:12px;line-height:1.5;box-shadow:4px 4px #020617}.workbox{margin-top:10px;padding:12px;display:grid;grid-template-columns:60px minmax(0,1fr) 130px;gap:10px;align-items:center}.bigicon{font-size:38px;text-align:center;border:2px solid #28518d;background:#0b2145;padding:9px}.workbox h2{font-size:19px;margin:0 0 5px}.workbox p{font-size:12px;color:var(--muted);margin:0 0 9px}.primary{background:linear-gradient(#168fff,#0755b9);border-color:#6ae3ff;font-weight:bold;width:100%;max-width:290px;font-size:16px}.muted{color:var(--muted);font-size:11px}.auto{display:flex;flex-direction:column;gap:8px}.auto button{font-size:11px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:9px}.item{padding:10px;min-width:0}.item h3{font-size:13px;margin:5px 0}.item p{font-size:11px;line-height:1.5;color:var(--muted);min-height:32px;margin:5px 0}.item .emoji{font-size:23px}.item button{width:100%;font-size:11px;padding:7px 4px;color:var(--gold)}.side{display:flex;flex-direction:column;gap:10px}.panel.pad{padding:11px}.panel h3{font-size:15px;margin:0 0 9px}.resources{display:grid;grid-template-columns:1fr 1fr;gap:6px}.resource{background:#061126;border:1px solid #244879;padding:7px;font-size:12px}.resource b{display:block;color:var(--gold);margin-top:3px}.log{font-size:11px;line-height:1.7;max-height:185px;overflow:auto;color:#bfd7fa}.log div{border-bottom:1px dashed #1a3763;padding:3px 0}.meter{height:14px;border:2px solid #24518b;background:#030918;margin:6px 0;overflow:hidden}.meter div{height:100%;width:0;background:linear-gradient(90deg,#05a9a3,#5bf6c8)}.tabview{margin-top:10px}.tabview[hidden]{display:none}.sectionTitle{font-size:15px;margin:0 0 8px;color:#d8ecff}.eventBox{border-color:#9c64c7}.eventBox button{width:100%;margin-top:8px}.bottom{max-width:1600px;margin:auto;padding:0 12px 18px;color:#799bc9;font-size:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);background:#07152d;border:3px solid var(--gold);padding:18px 24px;z-index:5;display:none;text-align:center;box-shadow:0 0 0 100vmax #02061599;max-width:90vw}.toast.show{display:block}.toast h2{color:var(--gold)}
+@media(max-width:1050px){.layout{grid-template-columns:140px minmax(0,1fr)}.side{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.layout{grid-template-columns:1fr;padding:7px}.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.nav button{margin:0;padding:7px 4px;font-size:11px}.scene{height:235px}.workbox{grid-template-columns:48px minmax(0,1fr)}.auto{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between}.side{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.top{padding:8px}.stat{min-width:88px}.speech{left:5%;bottom:11%;font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">IDLE BREAKER<small>— 絶望からの大逆転 —</small></div>
+ <div class="stat"><span>クレジット</span><b id="credits">0</b><span id="rate">+0 / 秒</span></div>
+ <div class="stat"><span>作業員 Lv.</span><b id="level">1</b><span id="xpText">EXP 0 / 20</span></div>
+ <div class="stat"><span>運命の欠片</span><b id="shards">0 ◆</b><span>奇跡の証</span></div>
+ <button id="saveBtn">💾 セーブ</button>
+</header>
+<div class="layout">
+ <nav class="nav">
+  <button class="active" data-tab="work">⛏ 作業</button>
+  <button data-tab="craft">🧰 装備・クラフト</button>
+  <button data-tab="base">🏚 拠点建築</button>
+  <button data-tab="skills">⭐ 作業員スキル</button>
+  <button data-tab="luck">🍀 運命の抽選</button>
+  <button id="autoBtn">⚙ 自動作業：OFF</button>
+  <button id="resetBtn">↻ 最初から</button>
+ </nav>
+ <main class="center">
+  <div class="scene panel"><canvas id="world" width="640" height="300"></canvas><div class="sceneText">廃墟の採掘場 — 使えるものを拾い、少しずつ立て直そう。</div><div class="speech" id="speech">……今日も何も起きない。<br>でも、まだ終わりじゃない。</div></div>
+  <section class="panel workbox">
+   <div class="bigicon">⛏️</div>
+   <div><h2>資源を掘る</h2><p>作業力 <b id="power">1</b>。素材もランダムで手に入る。</p><button class="primary" id="workBtn">作業する！ [SPACE]</button></div>
+   <div class="auto"><div class="muted">自動作業<br><b id="autoState" style="color:#ffca62">OFF</b></div><div class="muted">作業員は今日も働く。</div></div>
+  </section>
+  <section class="tabview" id="view-work">
+   <h3 class="sectionTitle">🧺 素材ストック</h3><div class="resources" id="resources"></div>
+   <div class="cards" id="workCards"></div>
+  </section>
+  <section class="tabview" id="view-craft" hidden>
+   <h3 class="sectionTitle">🧰 装備・クラフト</h3><div class="muted" style="margin-bottom:8px">素材を消費して装備を作成。装備すると作業力が上がる。</div><div class="cards" id="craftCards"></div>
+  </section>
+  <section class="tabview" id="view-base" hidden>
+   <h3 class="sectionTitle">🏚 拠点建築</h3><div class="muted" style="margin-bottom:8px">建物を増やすと資源や自動作業が強くなる。</div><div class="cards" id="baseCards"></div>
+  </section>
+  <section class="tabview" id="view-skills" hidden>
+   <h3 class="sectionTitle">⭐ 作業員スキル</h3><div class="panel pad" style="margin-bottom:8px">スキルポイント：<b id="skillPoints">0</b>　/　レベルアップで1ポイント獲得</div><div class="cards" id="skillCards"></div>
+  </section>
+  <section class="tabview" id="view-luck" hidden>
+   <h3 class="sectionTitle">🍀 運命の抽選</h3><div class="panel pad eventBox"><div>基本確率 <b>1 / 10,000</b>。当たれば <b style="color:var(--gold)">100,000 クレジット</b>！</div><div class="muted">天井なし。何回失敗しても確率は変わらない。</div><button id="rollBtn">抽選する（無料）</button><div class="muted" id="rollCount">0 回挑戦</div></div></section>
+ </main>
+ <aside class="side">
+  <section class="panel pad"><h3>🎒 素材・装備</h3><div class="resources" id="sideResources"></div><hr style="border-color:#1c3762"><div class="muted" id="equipmentText">装備：ボロいツルハシ</div></section>
+  <section class="panel pad eventBox"><h3>🎲 ランダムイベント</h3><div id="eventText">周囲は静かだ……次のイベントを待とう。</div><div class="muted" style="margin-top:7px">イベントは一定時間ごとに発生。</div></section>
+  <section class="panel pad"><h3>📋 作業ログ</h3><div class="log" id="log"></div></section>
+  <section class="panel pad"><h3>🎯 次の目標</h3><div id="goalText">100クレジット集める</div><div class="meter"><div id="goalBar"></div></div><div class="muted" id="goalProgress">0 / 100</div></section>
+ </aside>
+</div>
+<div class="bottom"><span>自動セーブ：15秒ごと • ブラウザに保存</span><span>SPACE：作業 / A：自動作業 / R：抽選</span><span>IDLE BREAKER 0.3 — pixel survival workshop</span></div>
+<div class="toast" id="toast"><h2 id="toastTitle">大逆転！</h2><div id="toastText"></div><button onclick="$('toast').classList.remove('show')" style="margin-top:12px">閉じる</button></div>
+<script>
+const $=id=>document.getElementById(id), fmt=n=>Math.floor(n).toLocaleString('ja-JP');
+const resourceNames={wood:'木材',stone:'石材',scrap:'スクラップ',crystal:'結晶'};
+const icons={wood:'🪵',stone:'🪨',scrap:'⚙️',crystal:'💎'};
+const baseData=[
+{id:'bench',icon:'🛠️',name:'作業台',desc:'作業力が+2される',cost:{wood:8,scrap:3},credits:30},
+{id:'shed',icon:'🏚️',name:'資材小屋',desc:'木材と石材を少しずつ生産',cost:{wood:15,stone:8},credits:70},
+{id:'generator',icon:'🔋',name:'発電機',desc:'自動作業が毎秒+2',cost:{scrap:12,stone:10},credits:120},
+{id:'garden',icon:'🌱',name:'小さな菜園',desc:'時間経過で木材を得る',cost:{wood:20,stone:5},credits:100},
+{id:'tower',icon:'🗼',name:'見張り塔',desc:'ランダムイベントの報酬アップ',cost:{wood:25,stone:20,scrap:10},credits:300}
+];
+const craftData=[
+{id:'ironPick',icon:'⛏️',name:'鉄のツルハシ',desc:'作業力+5',cost:{scrap:8,stone:5},credits:60,power:5},
+{id:'luckyCharm',icon:'🍀',name:'幸運のお守り',desc:'運命の抽選確率を少し上げる',cost:{crystal:3,scrap:3},credits:150,luck:.00002},
+{id:'reinforcedSuit',icon:'🦺',name:'強化作業服',desc:'作業力+3、イベント報酬アップ',cost:{scrap:12,wood:8},credits:120,power:3},
+{id:'drill',icon:'🔩',name:'簡易ドリル',desc:'自動作業+3/秒',cost:{scrap:15,crystal:1},credits:250,rate:3}
+];
+const skillData=[
+{id:'strong',icon:'💪',name:'力仕事',desc:'1ポイントごとに作業力+2',max:10},
+{id:'scavenger',icon:'🔎',name:'目利き',desc:'素材の発見率が上がる',max:10},
+{id:'worker',icon:'⚙️',name:'効率化',desc:'自動作業+1/秒',max:10}
+];
+let fresh=()=>({credits:0,shards:0,works:0,rolls:0,clickPower:1,autoRate:0,auto:false,level:1,xp:0,skillPoints:0,skills:{strong:0,scavenger:0,worker:0},resources:{wood:0,stone:0,scrap:0,crystal:0},buildings:{},equipment:{},equipped:'ボロいツルハシ',luck:0,logs:[],eventCount:0});
+let s=fresh(), currentTab='work', lastEvent=Date.now();
+function log(t){s.logs.unshift(t);s.logs=s.logs.slice(0,18);renderLog()}
+function renderLog(){$('log').innerHTML=s.logs.map(x=>'<div>› '+x+'</div>').join('')||'<div>まだ記録はない……</div>'}
+function addRes(type,n){s.resources[type]=(s.resources[type]||0)+n}
+function hasCost(cost,credits=0){return s.credits>=credits&&Object.entries(cost||{}).every(([k,v])=>(s.resources[k]||0)>=v)}
+function spend(cost,credits=0){s.credits-=credits;Object.entries(cost||{}).forEach(([k,v])=>s.resources[k]-=v)}
+function costText(cost,credits=0){return (credits?`🪙${fmt(credits)} `:'')+Object.entries(cost||{}).map(([k,v])=>`${icons[k]}${v}`).join(' ')}
+function totalPower(){return s.clickPower+(s.skills.strong||0)*2+(s.equipment.ironPick?5:0)+(s.equipment.reinforcedSuit?3:0)+(s.buildings.bench||0)*2}
+function totalRate(){return s.autoRate+(s.skills.worker||0)+(s.buildings.generator||0)*2+(s.equipment.drill?3:0)}
+function gainCredits(n,why){s.credits+=n;if(why)log(`${why}：+${fmt(n)} クレジット`)}
+function xpGain(n){s.xp+=n;let leveled=false;while(s.xp>=s.level*20){s.xp-=s.level*20;s.level++;s.skillPoints++;leveled=true;log(`作業員がレベル${s.level}に上がった！ スキルポイント+1`)}if(leveled)$('speech').innerHTML='少しずつ強くなっている。<br>次はもっと遠くへ行こう。'}
+function work(){let p=totalPower();gainCredits(p,'作業');s.works++;xpGain(2);if(Math.random()<.24+(s.skills.scavenger||0)*.025){let keys=['wood','stone','scrap','crystal'],weights=[.38,.3,.27,.05];if(s.equipment.reinforcedSuit)weights[3]=.08;let r=Math.random(),sum=0,type='wood';for(let i=0;i<keys.length;i++){sum+=weights[i];if(r<sum){type=keys[i];break}}let n=type==='crystal'?1:1+Math.floor(Math.random()*2);addRes(type,n);log(`${icons[type]} ${resourceNames[type]}を${n}個発見`)}if(Math.random()<.008+(s.skills.scavenger||0)*.001)triggerEvent();render()}
+function renderResources(target){$(target).innerHTML=Object.keys(resourceNames).map(k=>`<div class="resource">${icons[k]} ${resourceNames[k]}<b>${fmt(s.resources[k]||0)}</b></div>`).join('')}
+function renderCraft(){ $('craftCards').innerHTML=craftData.map(d=>`<div class="panel item"><div class="emoji">${d.icon}</div><h3>${d.name}</h3><p>${d.desc}<br><span class="muted">${costText(d.cost,d.credits)}</span></p><button data-craft="${d.id}" ${s.equipment[d.id]||!hasCost(d.cost,d.credits)?'disabled':''}>${s.equipment[d.id]?'作成済み':'クラフト'}</button></div>`).join('');document.querySelectorAll('[data-craft]').forEach(b=>b.onclick=()=>craft(b.dataset.craft))}
+function craft(id){let d=craftData.find(x=>x.id===id);if(!d||s.equipment[id]||!hasCost(d.cost,d.credits))return;spend(d.cost,d.credits);s.equipment[id]=true;s.equipped=d.name;log(`${d.name}を作成した！`);$('speech').innerHTML=`${d.name}を手に入れた！<br>作業が少し楽になりそうだ。`;render()}
+function renderBase(){$('baseCards').innerHTML=baseData.map(d=>{let built=s.buildings[d.id]||0;return `<div class="panel item"><div class="emoji">${d.icon}</div><h3>${d.name} Lv.${built}</h3><p>${d.desc}<br><span class="muted">${costText(d.cost,d.credits)}</span></p><button data-base="${d.id}" ${!hasCost(d.cost,d.credits)?'disabled':''}>建築・強化</button></div>`}).join('');document.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>build(b.dataset.base))}
+function build(id){let d=baseData.find(x=>x.id===id);if(!d||!hasCost(d.cost,d.credits))return;spend(d.cost,d.credits);s.buildings[id]=(s.buildings[id]||0)+1;log(`${d.name}を建築・強化した`);$('speech').innerHTML='拠点が少しずつ整ってきた。<br>まだやれることはある。';render()}
+function renderSkills(){$('skillPoints').textContent=s.skillPoints;$('skillCards').innerHTML=skillData.map(d=>`<div class="panel item"><div class="emoji">${d.icon}</div><h3>${d.name} Lv.${s.skills[d.id]||0}/${d.max}</h3><p>${d.desc}</p><button data-skill="${d.id}" ${s.skillPoints<=0||(s.skills[d.id]||0)>=d.max?'disabled':''}>1ポイント使う</button></div>`).join('');document.querySelectorAll('[data-skill]').forEach(b=>b.onclick=()=>{let id=b.dataset.skill,d=skillData.find(x=>x.id===id);if(s.skillPoints<=0||(s.skills[id]||0)>=d.max)return;s.skillPoints--;s.skills[id]++;log(`スキル「${d.name}」を強化した`);render()})}
+function render(){ $('credits').textContent=fmt(s.credits);$('level').textContent=s.level;$('xpText').textContent=`EXP ${s.xp} / ${s.level*20}`;$('shards').textContent=fmt(s.shards)+' ◆';$('rate').textContent='+'+fmt(totalRate())+' / 秒';$('power').textContent=fmt(totalPower());$('autoState').textContent=s.auto?'ON':'OFF';$('autoState').style.color=s.auto?'#53edb6':'#ffca62';$('autoBtn').textContent='⚙ 自動作業：'+(s.auto?'ON':'OFF');$('rollCount').textContent=fmt(s.rolls)+' 回挑戦';$('equipmentText').textContent='装備：'+s.equipped;renderResources('resources');renderResources('sideResources');renderCraft();renderBase();renderSkills();let goal=100;while(goal<s.credits&&goal<10000000)goal*=10;$('goalText').textContent=fmt(goal)+' クレジット集める';$('goalProgress').textContent=fmt(s.credits)+' / '+fmt(goal);$('goalBar').style.width=Math.min(100,s.credits/goal*100)+'%';}
+function triggerEvent(){s.eventCount++;let events=[
+()=>{let n=8+Math.floor(Math.random()*20)+(s.buildings.tower||0)*3;gainCredits(n,'放置された財布を発見');$('eventText').textContent=`道端で古い財布を発見！ ${n}クレジットを得た。`;},
+()=>{let n=3+Math.floor(Math.random()*4);addRes('scrap',n);log(`ランダムイベント：スクラップ${n}個を発見`);$('eventText').textContent=`崩れた機械の中からスクラップ${n}個を回収！`;},
+()=>{let n=2+Math.floor(Math.random()*3);addRes('wood',n);addRes('stone',n);log('資源の山を見つけた');$('eventText').textContent='崩れた倉庫を発見！ 木材と石材を回収した。';},
+()=>{let n=20+Math.floor(Math.random()*50);gainCredits(n,'謎の旅人の報酬');$('eventText').textContent=`旅人の手伝いをした。お礼に${n}クレジット！`;},
+()=>{if(s.resources.crystal>0){s.resources.crystal++;$('eventText').textContent='青く光る結晶の欠片を発見！';log('イベント：結晶を1個発見')}else{addRes('crystal',1);$('eventText').textContent='奇跡！ 結晶を1個発見した！';log('イベント：結晶を1個発見')}}
+];events[Math.floor(Math.random()*events.length)]();$('speech').innerHTML='おっ、何か起きたぞ！<br>このチャンスを活かそう。';}
+function roll(){s.rolls++;if(Math.random()<.0001+s.luck){s.credits+=100000;s.shards++;$('toastTitle').textContent='★ 大逆転！！ ★';$('toastText').innerHTML='奇跡が起きた！<br><b>100,000 クレジット</b>と運命の欠片を獲得！';$('toast').classList.add('show');log('奇跡の大当たり！！ +100,000');$('speech').innerHTML='うそだろ……！？<br>これで人生が変わるかもしれない！'}else{log('運命の抽選……ハズレ。まだ終わらない。');if(Math.random()<.03){addRes('crystal',1);log('ハズレの代わりに結晶を発見')}}render()}
+$('workBtn').onclick=work;$('rollBtn').onclick=roll;$('autoBtn').onclick=()=>{s.auto=!s.auto;render();log('自動作業 '+(s.auto?'ON':'OFF'))};
+$('saveBtn').onclick=()=>{localStorage.setItem('idleBreakerSaveV2',JSON.stringify(s));localStorage.setItem('idleBreakerSave',JSON.stringify(s));log('セーブしました')};
+$('resetBtn').onclick=()=>{if(confirm('今のセーブデータを消して最初から始める？')){localStorage.removeItem('idleBreakerSaveV2');localStorage.removeItem('idleBreakerSave');location.reload()}};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{currentTab=b.dataset.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tabview').forEach(x=>x.hidden=x.id!=='view-'+currentTab);});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();work()}if(e.key.toLowerCase()==='a'){$('autoBtn').click()}if(e.key.toLowerCase()==='r')roll()});
+setInterval(()=>{if(s.auto){gainCredits(Math.max(1,totalRate()),'自動作業');s.works++;xpGain(1);if(Math.random()<.13){let ks=['wood','stone','scrap'];let k=ks[Math.floor(Math.random()*ks.length)];addRes(k,1)}}if((s.buildings.shed||0)>0&&Math.random()<.4){addRes('wood',s.buildings.shed);addRes('stone',Math.max(1,Math.floor(s.buildings.shed/2)))}if((s.buildings.garden||0)>0&&Math.random()<.25)addRes('wood',s.buildings.garden);if(Date.now()-lastEvent>45000){lastEvent=Date.now();if(Math.random()<.7)triggerEvent()}render()},1000);
+setInterval(()=>{try{localStorage.setItem('idleBreakerSaveV2',JSON.stringify(s));localStorage.setItem('idleBreakerSave',JSON.stringify(s))}catch(e){}},15000);
+function load(){try{let raw=localStorage.getItem('idleBreakerSaveV2')||localStorage.getItem('idleBreakerSave');if(raw){let old=JSON.parse(raw);s={...fresh(),...old,resources:{...fresh().resources,...old.resources},skills:{...fresh().skills,...old.skills},buildings:{...old.buildings},equipment:{...old.equipment},logs:old.logs||[]};log('セーブデータを読み込んだ')}}catch(e){s=fresh()}render();renderLog()}
+function drawWorld(){let c=$('world'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,w,h);let g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#151b53');g.addColorStop(.5,'#5a356d');g.addColorStop(1,'#101b39');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+ctx.fillStyle='#ff8d9f';ctx.beginPath();ctx.arc(490,68,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d25d91';ctx.fillRect(466,55,15,5);ctx.fillRect(487,78,24,5);
+for(let i=0;i<37;i++){let x=(i*79)%w,y=48+(i*37)%135,hh=35+(i*17)%100,ww=18+(i*13)%34;ctx.fillStyle=i%2?'#20294f':'#25234b';ctx.fillRect(x,y,ww,hh);ctx.fillStyle='#526080';ctx.fillRect(x+4,y+7,3,4);ctx.fillRect(x+ww-8,y+19,3,4);ctx.fillRect(x+5,y+26,3,4)}
+// far machinery and cables
+ctx.strokeStyle='#11182e';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,115);ctx.lineTo(120,115);ctx.lineTo(120,75);ctx.lineTo(250,75);ctx.lineTo(250,130);ctx.stroke();ctx.fillStyle='#19294a';ctx.fillRect(35,140,10,105);ctx.fillRect(25,150,30,8);ctx.fillRect(560,105,35,150);ctx.fillStyle='#35dfff';ctx.fillRect(570,126,12,12);ctx.fillStyle='#ffcf69';ctx.fillRect(577,128,4,4);
+ctx.fillStyle='#0b1630';ctx.fillRect(0,238,w,62);ctx.fillStyle='#28365a';for(let x=0;x<w;x+=19){ctx.fillRect(x,243+(x%4)*3,11,4);ctx.fillRect(x+8,275,5,3)}
+// shack and workshop
+ctx.fillStyle='#392d48';ctx.fillRect(50,168,220,78);ctx.fillStyle='#69506a';ctx.fillRect(39,157,243,15);ctx.fillStyle='#1a2444';ctx.beginPath();ctx.moveTo(30,168);ctx.lineTo(125,115);ctx.lineTo(294,168);ctx.fill();ctx.fillStyle='#a6c7ff';ctx.fillRect(74,190,30,26);ctx.fillStyle='#48dcff';ctx.fillRect(79,195,20,16);ctx.fillStyle='#f7a45b';ctx.fillRect(220,198,18,48);ctx.fillStyle='#d4a25e';ctx.fillRect(225,204,8,13);
+ctx.fillStyle='#293954';ctx.fillRect(350,195,62,50);ctx.fillStyle='#51749b';ctx.fillRect(358,205,16,16);ctx.fillRect(382,205,18,16);ctx.fillStyle='#2ce2ef';ctx.fillRect(362,209,8,8);ctx.fillStyle='#ffb05a';ctx.fillRect(385,209,10,8);
+// campfire
+ctx.fillStyle='#f46d49';ctx.fillRect(325,243,13,27);ctx.fillStyle='#ffcc63';ctx.fillRect(328,233,8,30);ctx.fillStyle='#ff8a45';ctx.fillRect(318,247,28,12);ctx.fillStyle='#f7dc8c';ctx.fillRect(330,244,6,13);ctx.fillStyle='#9c654f';ctx.fillRect(314,265,35,7);
+// pixel worker bobbing
+let bob=Math.floor(Date.now()/450)%2;ctx.fillStyle='#141a35';ctx.fillRect(281,210+bob,31,42);ctx.fillStyle='#e5c1b3';ctx.fillRect(288,202+bob,20,19);ctx.fillStyle='#d6dce8';ctx.fillRect(285,197+bob,25,8);ctx.fillStyle='#7fc6ef';ctx.fillRect(290,210+bob,5,4);ctx.fillRect(301,210+bob,5,4);ctx.fillStyle='#557ab1';ctx.fillRect(284,228+bob,26,19);ctx.fillStyle='#e2c4a2';ctx.fillRect(312,226+bob,9,5);ctx.fillStyle='#b7dfff';ctx.fillRect(314,219+bob,4,16);
+// pet
+ctx.fillStyle='#eee0d0';ctx.fillRect(365,241,19,14);ctx.fillRect(369,234,12,10);ctx.fillStyle='#f3d3dd';ctx.fillRect(368,231,4,6);ctx.fillRect(378,231,4,6);ctx.fillStyle='#17213f';ctx.fillRect(372,238,3,3);ctx.fillRect(380,238,3,3);ctx.fillRect(368,254,4,7);ctx.fillRect(380,254,4,7);
+// floating motes
+for(let i=0;i<10;i++){ctx.fillStyle=i%2?'#5ae6ff':'#ffc96b';ctx.globalAlpha=.4+Math.sin(Date.now()/500+i)*.3;ctx.fillRect((i*61+Math.floor(Date.now()/90))%w,120+(i*23)%110,2,2)}ctx.globalAlpha=1;requestAnimationFrame(drawWorld)}
+load();drawWorld();
+</script>
+</body>
+</html>
