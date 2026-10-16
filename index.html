@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDLE BREAKER - 絶望からの大逆転</title>
+<style>
+:root{--bg:#050b1d;--panel:#091832;--line:#234a83;--blue:#168dff;--cyan:#50e3ff;--gold:#ffc85a;--text:#eaf4ff;--muted:#94b8e8;--pink:#ff70bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#172c62 0,#070f25 50%,#030714 100%);color:var(--text);font-family:Consolas,"Courier New",monospace;image-rendering:pixelated}
+button{font:inherit;color:inherit;cursor:pointer;border:2px solid #3273b7;background:linear-gradient(#16477e,#0a2852);padding:10px 14px;box-shadow:inset 0 0 0 2px #07142c;transition:filter .1s}button:hover{filter:brightness(1.25)}button:active{transform:translateY(2px)}button:disabled{opacity:.35;cursor:not-allowed}
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:3px solid #1b3971;background:#030918;flex-wrap:wrap}.logo{font-size:clamp(20px,3vw,32px);font-weight:900;letter-spacing:2px;color:#d9f2ff;text-shadow:3px 3px #1762a5}.logo small{display:block;font-size:12px;letter-spacing:4px;color:var(--pink);text-shadow:none}.stat{border:2px solid #1c3f77;background:#08152e;padding:8px 12px;min-width:112px;flex:1}.stat b{display:block;color:var(--gold);font-size:20px}.stat span{font-size:11px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:180px minmax(0,1fr) 300px;gap:12px;padding:12px;max-width:1600px;margin:auto}.nav,.panel{background:linear-gradient(135deg,#0a1a37,#061127);border:2px solid var(--line);box-shadow:0 0 0 3px #020817,inset 0 0 0 2px #0c2244}.nav{padding:8px;height:max-content}.nav button{display:block;width:100%;text-align:left;margin-bottom:7px}.nav button.active{background:linear-gradient(#0878d6,#074184);border-color:#54d7ff}.center{min-width:0}.scene{height:310px;position:relative;overflow:hidden;border:3px solid #244a83;background:#171d4a;image-rendering:pixelated}
+.scene canvas{width:100%;height:100%;display:block;image-rendering:pixelated}.sceneText{position:absolute;top:10px;left:12px;right:12px;background:#07132cdd;border:1px solid #4166a3;padding:9px 12px;font-size:14px}
+.speech{position:absolute;left:24%;bottom:18%;max-width:230px;background:#09152eeF;border:2px solid #b46ecb;padding:9px 12px;font-size:13px;line-height:1.5;box-shadow:4px 4px #020617}
+.workbox{margin-top:12px;padding:14px;display:grid;grid-template-columns:72px minmax(0,1fr) 145px;gap:12px;align-items:center}.bigicon{font-size:42px;text-align:center;border:2px solid #28518d;background:#0b2145;padding:10px}.workbox h2{margin:0 0 5px;font-size:21px}.workbox p{margin:0 0 10px;color:var(--muted);font-size:13px}.primary{background:linear-gradient(#168fff,#0755b9);border-color:#6ae3ff;font-weight:bold;font-size:17px;width:100%;max-width:300px}.toggle{color:#4dffbc;border-color:#249f84}.upgradeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:10px}.upgrade{padding:10px;min-width:0}.upgrade .emoji{font-size:24px}.upgrade h3{font-size:12px;margin:7px 0}.upgrade p{font-size:11px;color:var(--muted);min-height:28px}.upgrade button{width:100%;padding:8px 4px;font-size:12px;color:var(--gold)}
+.side{display:flex;flex-direction:column;gap:12px}.panel{padding:12px}.panel h3{margin:0 0 10px;color:#d7e9ff;font-size:17px}.jackpot{border-color:#d9a14a}.jackpot strong{color:var(--gold)}.jackpot .odds{color:#a8c9f3;font-size:12px;line-height:1.7}.jackpot button{width:100%;margin-top:10px;border-color:#39d4ff;background:linear-gradient(#116eac,#06335f)}.log{font-size:12px;line-height:1.8;max-height:235px;overflow:auto;color:#b9d5fb}.log div{border-bottom:1px dashed #1a3763;padding:3px 0}.meter{height:18px;border:2px solid #24518b;background:#030918;margin:8px 0;overflow:hidden}.meter div{height:100%;width:0;background:linear-gradient(90deg,#05a9a3,#5bf6c8);transition:width .2s}.muted{color:var(--muted);font-size:12px}.bottom{padding:0 12px 18px;max-width:1600px;margin:auto;color:#7899c7;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;top:20%;transform:translateX(-50%);background:#07152d;border:3px solid var(--gold);padding:18px 24px;z-index:5;display:none;text-align:center;box-shadow:0 0 0 100vmax #02061599}.toast.show{display:block;animation:pop .25s}@keyframes pop{from{transform:translateX(-50%) scale(.8)}to{transform:translateX(-50%) scale(1)}}
+@media(max-width:1050px){.layout{grid-template-columns:150px minmax(0,1fr)}.side{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}.upgradeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.layout{grid-template-columns:1fr;padding:8px}.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.nav button{margin:0;padding:8px 4px;font-size:12px}.scene{height:245px}.workbox{grid-template-columns:54px minmax(0,1fr)}.workbox .auto{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center}.side{grid-template-columns:1fr}.upgradeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.top{padding:9px}.stat{min-width:90px}.speech{left:8%;bottom:12%;font-size:11px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">IDLE BREAKER<small>— 絶望からの大逆転 —</small></div>
+  <div class="stat"><span>所持クレジット</span><b id="credits">0</b><span id="rate">+0 / 秒</span></div>
+  <div class="stat"><span>運命の欠片</span><b id="shards">0 ◆</b><span>大逆転の証</span></div>
+  <div class="stat"><span>作業回数</span><b id="works">0</b><span>今日も掘り続ける</span></div>
+  <button id="saveBtn" title="セーブ">💾 セーブ</button>
+</header>
+<div class="layout">
+  <nav class="nav">
+    <button class="active" data-tab="work">⛏ 作業</button>
+    <button data-tab="upgrade">⬆ 強化</button>
+    <button data-tab="luck">🍀 運試し</button>
+    <button data-tab="records">📜 記録</button>
+    <button id="soundBtn">🔔 効果音 OFF</button>
+    <button id="resetBtn">↻ 最初から</button>
+  </nav>
+  <main class="center">
+    <div class="scene panel">
+      <canvas id="world" width="640" height="310"></canvas>
+      <div class="sceneText">廃墟の採掘場。持ち物はボロいツルハシだけ。</div>
+      <div class="speech" id="speech">……今日も何も起きないな。<br>でも、きっといつか。</div>
+    </div>
+    <section class="panel workbox">
+      <div class="bigicon">⛏️</div>
+      <div><h2>資源を掘る</h2><p>作業1回で <strong id="perClick">1</strong> クレジットを獲得。連打でも放置でもOK。</p><button class="primary" id="workBtn">作業する！ [SPACE]</button></div>
+      <div class="auto"><div class="muted">自動作業<br><strong id="autoState" style="color:#ffca62">OFF</strong></div><button id="autoBtn">自動作業 ON/OFF</button></div>
+    </section>
+    <div class="upgradeGrid" id="upgrades"></div>
+  </main>
+  <aside class="side">
+    <section class="panel jackpot">
+      <h3>🍀 運命の抽選</h3><div class="odds">超低確率の大逆転。<br><strong>1 / 10,000</strong> の確率で<br><strong>100,000 クレジット</strong>を獲得！</div>
+      <button id="rollBtn">抽選する（無料）<br><span class="muted" id="rollCount">0 回挑戦</span></button>
+      <div class="muted" style="margin-top:9px">天井・救済措置なし。運だけが頼り。</div>
+    </section>
+    <section class="panel"><h3>📋 作業ログ</h3><div class="log" id="log"></div></section>
+    <section class="panel"><h3>🎯 目標</h3><div id="goalText">最初の100クレジットを集める</div><div class="meter"><div id="goalBar"></div></div><div class="muted" id="goalProgress">0 / 100</div><hr style="border-color:#1c3762"><div class="muted">💡 ヒント：最初は地道に作業。強化を買うと放置効率が上がる。</div></section>
+  </aside>
+</div>
+<div class="bottom"><span>自動セーブあり • ブラウザ内に保存</span><span>SPACE：作業 / A：自動作業 / R：運試し</span><span>IDLE BREAKER prototype 0.2</span></div>
+<div class="toast" id="toast"><h2 id="toastTitle">大逆転！</h2><div id="toastText"></div><button onclick="document.getElementById('toast').classList.remove('show')" style="margin-top:12px">閉じる</button></div>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.floor(n).toLocaleString('ja-JP');
+const upgrades=[
+ {id:'pick',icon:'⛏️',name:'ツルハシ強化',desc:'1回の作業で稼ぐ量が増える',base:20,step:1,rate:'作業力',effect:s=>s.clickPower+=1},
+ {id:'drone',icon:'🤖',name:'自動採掘ドローン',desc:'毎秒自動でクレジット獲得',base:80,step:1,rate:'毎秒 +1',effect:s=>s.autoRate+=1},
+ {id:'bag',icon:'🎒',name:'大型バックパック',desc:'作業ボーナスが少し増える',base:150,step:1,rate:'作業力',effect:s=>s.clickPower+=3},
+ {id:'luck',icon:'🍀',name:'幸運のお守り',desc:'抽選確率が少しだけ上がる',base:500,step:1,rate:'運',effect:s=>s.luck+=0.00001}
+];
+let s={credits:0,shards:0,works:0,rolls:0,clickPower:1,autoRate:0,luck:0,auto:false,levels:{pick:0,drone:0,bag:0,luck:0},logs:[],sound:false};
+function log(t){s.logs.unshift(t);s.logs=s.logs.slice(0,16);renderLog()}
+function renderLog(){$('log').innerHTML=s.logs.map(x=>'<div>› '+x+'</div>').join('')||'<div>まだ記録はない……</div>'}
+function cost(u){return Math.floor(u.base*Math.pow(1.72,s.levels[u.id]))}
+function renderUpgrades(){$('upgrades').innerHTML=upgrades.map(u=>`<div class="panel upgrade"><div class="emoji">${u.icon}</div><h3>${u.name} Lv.${s.levels[u.id]}</h3><p>${u.desc}</p><button data-buy="${u.id}" ${s.credits<cost(u)?'disabled':''}>🪙 ${fmt(cost(u))}</button></div>`).join('');document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buy(b.dataset.buy))}
+function render(){ $('credits').textContent=fmt(s.credits);$('shards').textContent=fmt(s.shards)+' ◆';$('works').textContent=fmt(s.works);$('rate').textContent='+'+fmt(s.autoRate)+' / 秒';$('perClick').textContent=fmt(s.clickPower);$('autoState').textContent=s.auto?'ON':'OFF';$('autoState').style.color=s.auto?'#4dffbc':'#ffca62';$('rollCount').textContent=fmt(s.rolls)+' 回挑戦';renderUpgrades();let goal=100;while(goal<s.credits&&goal<1000000)goal*=10;$('goalText').textContent=fmt(goal)+' クレジットを集める';$('goalProgress').textContent=fmt(s.credits)+' / '+fmt(goal);$('goalBar').style.width=Math.min(100,s.credits/goal*100)+'%'}
+function gain(n,reason){s.credits+=n;if(reason)log(reason+'：+'+fmt(n)+' クレジット');render()}
+function work(){gain(s.clickPower,'作業');s.works++;if(Math.random()<0.015){let found=5+Math.floor(Math.random()*25);gain(found,'資源発見');$('speech').innerHTML='おっ、使えそうな資源だ！<br>今日は少し運がいい。'}else if(Math.random()<0.12){$('speech').innerHTML='カン、カン……<br>まだまだ掘り続ける。'};render()}
+function buy(id){let u=upgrades.find(x=>x.id===id),c=cost(u);if(s.credits<c)return;s.credits-=c;s.levels[id]++;if(id==='pick')s.clickPower++;if(id==='drone')s.autoRate++;if(id==='bag')s.clickPower+=3;if(id==='luck')s.luck+=0.00001;log(u.name+'を強化した');render()}
+function roll(){s.rolls++;let p=0.0001+s.luck;if(Math.random()<p){s.credits+=100000;s.shards++;$('toastTitle').textContent='★ 大逆転！！ ★';$('toastText').innerHTML='奇跡が起きた！<br><strong>100,000 クレジット</strong>と運命の欠片を獲得！';$('toast').classList.add('show');$('speech').innerHTML='うそだろ……！？<br>これで人生が変わるかもしれない！';log('奇跡の大当たり！！ +100,000');}else if(Math.random()<0.025){let bonus=1+Math.floor(Math.random()*3);s.credits+=bonus;log('小さな幸運：+'+bonus+' クレジット');}else{log('抽選……ハズレ。まだ終わらない。');}render()}
+$('workBtn').onclick=work;$('rollBtn').onclick=roll;$('autoBtn').onclick=()=>{s.auto=!s.auto;render();log('自動作業 '+(s.auto?'ON':'OFF'))};
+$('saveBtn').onclick=()=>{localStorage.setItem('idleBreakerSave',JSON.stringify(s));log('セーブしました');};
+$('resetBtn').onclick=()=>{if(confirm('セーブデータを消して最初から始める？')){localStorage.removeItem('idleBreakerSave');location.reload()}};
+$('soundBtn').onclick=()=>{s.sound=!s.sound;$('soundBtn').textContent='🔔 効果音 '+(s.sound?'ON':'OFF')};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');let t=b.dataset.tab;if(t==='work')$('speech').innerHTML='……今日も何も起きないな。<br>でも、きっといつか。';if(t==='upgrade')$('speech').innerHTML='道具さえあれば、少しは楽になる。';if(t==='luck')$('speech').innerHTML='確率は低い。でも、ゼロじゃない。';if(t==='records')$('speech').innerHTML='失敗も記録に残る。いつか笑い話になる。';});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();work()}if(e.key.toLowerCase()==='a'){$('autoBtn').click()}if(e.key.toLowerCase()==='r')roll()});
+setInterval(()=>{if(s.auto&&s.autoRate===0)work();if(s.autoRate>0)gain(s.autoRate,'自動作業');},1000);
+setInterval(()=>{localStorage.setItem('idleBreakerSave',JSON.stringify(s));},15000);
+function drawWorld(){const c=$('world'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,w,h);
+// dusk sky
+let g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#151b53');g.addColorStop(.55,'#56356d');g.addColorStop(1,'#111c3b');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+ctx.fillStyle='#ff8d9f';ctx.beginPath();ctx.arc(490,75,31,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d25d91';ctx.fillRect(465,62,15,5);ctx.fillRect(486,85,24,5);
+for(let i=0;i<34;i++){let x=(i*79)%w,y=65+(i*37)%135,hh=35+(i*17)%100,ww=18+(i*13)%34;ctx.fillStyle=i%2?'#20294f':'#25234b';ctx.fillRect(x,y,ww,hh);ctx.fillStyle='#526080';ctx.fillRect(x+4,y+7,3,4);ctx.fillRect(x+ww-8,y+19,3,4);ctx.fillRect(x+5,y+26,3,4)}
+ctx.fillStyle='#0b1630';ctx.fillRect(0,245,w,65);ctx.fillStyle='#28365a';for(let x=0;x<w;x+=19){ctx.fillRect(x,250+(x%4)*3,11,4);ctx.fillRect(x+8,278,5,3)}
+// little shack
+ctx.fillStyle='#392d48';ctx.fillRect(65,177,205,79);ctx.fillStyle='#69506a';ctx.fillRect(52,166,232,15);ctx.fillStyle='#1a2444';ctx.beginPath();ctx.moveTo(44,177);ctx.lineTo(126,126);ctx.lineTo(291,177);ctx.fill();ctx.fillStyle='#a6c7ff';ctx.fillRect(91,199,28,24);ctx.fillStyle='#48dcff';ctx.fillRect(96,204,18,14);ctx.fillStyle='#f7a45b';ctx.fillRect(223,207,17,49);ctx.fillStyle='#d4a25e';ctx.fillRect(227,212,8,13);
+// campfire
+ctx.fillStyle='#f46d49';ctx.fillRect(335,245,13,27);ctx.fillStyle='#ffcc63';ctx.fillRect(338,235,8,30);ctx.fillStyle='#ff8a45';ctx.fillRect(328,249,28,12);ctx.fillStyle='#f7dc8c';ctx.fillRect(339,246,6,13);ctx.fillStyle='#9c654f';ctx.fillRect(324,267,35,7);
+// pixel worker
+let bob=Math.floor(Date.now()/500)%2;ctx.fillStyle='#141a35';ctx.fillRect(285,215+bob,31,42);ctx.fillStyle='#e5c1b3';ctx.fillRect(292,207+bob,20,19);ctx.fillStyle='#d6dce8';ctx.fillRect(289,202+bob,25,8);ctx.fillStyle='#7fc6ef';ctx.fillRect(294,215+bob,5,4);ctx.fillRect(305,215+bob,5,4);ctx.fillStyle='#557ab1';ctx.fillRect(288,233+bob,26,19);ctx.fillStyle='#e2c4a2';ctx.fillRect(316,231+bob,9,5);ctx.fillStyle='#b7dfff';ctx.fillRect(318,224+bob,4,16);
+// pet
+ctx.fillStyle='#eee0d0';ctx.fillRect(367,246,19,14);ctx.fillRect(371,239,12,10);ctx.fillStyle='#f3d3dd';ctx.fillRect(370,236,4,6);ctx.fillRect(380,236,4,6);ctx.fillStyle='#17213f';ctx.fillRect(374,243,3,3);ctx.fillRect(382,243,3,3);ctx.fillRect(370,259,4,7);ctx.fillRect(382,259,4,7);
+// distant glowing tower
+ctx.fillStyle='#121d3c';ctx.fillRect(550,123,32,132);ctx.fillStyle='#5b8bd5';ctx.fillRect(560,145,10,12);ctx.fillStyle='#39e6ff';ctx.fillRect(562,147,6,8);
+requestAnimationFrame(drawWorld)}
+function load(){try{let old=JSON.parse(localStorage.getItem('idleBreakerSave'));if(old)s={...s,...old,levels:{...s.levels,...old.levels}}}catch(e){}render();renderLog();drawWorld()}
+load();
+</script>
+</body>
+</html>
